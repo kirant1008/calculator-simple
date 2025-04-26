@@ -1,6 +1,6 @@
 name: Python CI 
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -24,3 +24,23 @@ jobs:
     - name: Run tests
       run: |
         pytest
+  
+  deploy:
+    
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v0.1.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd simple-python-app
+            git pull origin main
+            echo "Deployment completed!"
+    
+      
+      
