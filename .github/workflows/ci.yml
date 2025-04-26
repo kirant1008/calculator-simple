@@ -31,6 +31,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: Debug SSH Connection
+        run: |
+          echo "Connecting to ${{ secrets.SSH_HOST }} as ${{ secrets.SSH_USER }}"
+          ping -c 4 ${{ secrets.SSH_HOST }}
       - name: Deploy to production
         uses: appleboy/ssh-action@v0.1.0
         with:
