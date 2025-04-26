@@ -30,21 +30,22 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
+
     steps:
-      - name: Debug SSH Connection
-        run: |
-          echo "Connecting to ${{ secrets.SSH_HOST }} as ${{ secrets.SSH_USER }}"
-          ping -c 4 ${{ secrets.SSH_HOST }}
-      - name: Deploy to production
-        uses: appleboy/ssh-action@v0.1.0
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd simple-python-app
-            git pull origin main
-            echo "Deployment completed!"
-    
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Create SSH key file
+      run: |
+        echo "${{ secrets.SSH_KEY }}" > private_key.pem
+        chmod 600 private_key.pem
+
+    - name: Deploy to EC2 via SSH
+      run: |
+        ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd simple-python-app
+          git pull origin main
+          echo "Deployed successfully!"
+        EOF
       
       
