@@ -43,7 +43,7 @@ jobs:
     - name: Deploy to EC2 via SSH
       run: |
         ssh -i private_key.pem -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd simple-python-app
+          cd calculator-simple
           git pull origin main
           echo "Deployed successfully!"
         EOF
